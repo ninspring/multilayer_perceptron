@@ -19,13 +19,16 @@ def file_parser1(filename):
         vector_X.append(row)
     return vector_X, vector_X
 
+
 def file_parser2(filename):
+
     vector_X = []
 
     with open(filename) as plik:
         tab = plik.read()
+        tab = tab.replace("]", "")
 
-    tab = re.split('\n', tab)
+    tab = re.split('\[', tab)
 
     while '' in tab:
         tab.remove('')
@@ -35,4 +38,5 @@ def file_parser2(filename):
         row = [float(x) for x in rowTxt]
 
         vector_X.append(row)
+
     return vector_X
