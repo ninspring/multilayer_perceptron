@@ -1,11 +1,17 @@
 import Network as net
 import Parser as files
 import matplotlib.pyplot as plt
-import numpy as np
+import Classification
 
 
 # Name of the input and output file (in this case it's the same)
-vector_x, vector_y = files.file_parser1('pattern1.txt')
+vector_X = files.file_parser1('irisXa.txt')
+vector_y = files.file_parser1('irisYa.txt')
+
+#Take user input to define which fetures take into consideration
+result = files.take_user_input()
+vector_x = files.whitch_columns(vector_X, result[0])
+
 
 # Name of the file containing weights for testing mode
 vector_weights = files.file_parser2('output_weights.out')
@@ -18,18 +24,16 @@ f_in.close()
 
 
 iterations = 5000
-precision = 0.01
+precision = 0.001
 
 # Define network
-mode = "t"                  # "l" for learning mode, "t" for testing
-option = "i"                # "i" for number of iterations, "p" for precision
-input_layer_neurons = 4
-hidden_layer_neurons = 2
-output_layer_neurons = 4
-bias = 1
-eta = 0.6
-momentum = 0
-
+mode = "l"                  # "l" for learning mode, "t" for testing
+input_layer_neurons = result[1]
+hidden_layer_neurons = result[2]
+output_layer_neurons = result[3]
+bias = result[4]
+eta = result[5]
+momentum = result[6]
 print("------------------------------")
 print("Ustawienia sieci:")
 print("------------------------------")
@@ -56,32 +60,30 @@ if mode == "l":
     print("Błędy wypisywane co 200 epok:")
     print("------------------------------")
 
-    if option == "i":
-        for i in range(iterations):
-            error = net.deltaNet(vector_x, vector_y, network)
-            vec_delta.append(error)
-            vec_outcome.append(net.outcome(vector_x, network))
-            network.learn_epoch(vector_x, vector_y)
-            if i%200 == 0:
-                print("Błąd w epoce ", i, "wynosi: ", round(error, 4))
-
-    if option == "p":
-        error = 100
-        i = 0
-        while error > precision:
+    error = 100
+    for i in range(iterations):
+        if error > precision:
             i += 1
             error = net.deltaNet(vector_x, vector_y, network)
             vec_delta.append(error)
             vec_outcome.append(net.outcome(vector_x, network))
             network.learn_epoch(vector_x, vector_y)
-            if i%200 == 0:
+            if i % 200 == 0:
                 print("Błąd w epoce ", i, "wynosi: ", round(error, 4))
 
 
     print("------------------------------")
     print("Błąd obliczony w ostatniej epoce:", vec_delta[-1])
+    print("Ilość iteracji:", i)
     print("Wzorzec: ", vector_y)
     print("Wynik:   ", vec_outcome[-1])
+
+    target = Classification.name_species(vector_y, vec_delta[-1])
+    predicted = Classification.name_species(vec_outcome[-1], vec_delta[-1])
+    print(target)
+    print(predicted)
+    print(Classification.skliearnmatrix(target, predicted))
+
 
     plt.figure(0)
     line1, = plt.plot(vec_delta, 'r', label='1')
@@ -91,6 +93,7 @@ if mode == "l":
     plt.ylabel("error")
     plt.grid()
     plt.show()
+
 
 
 if mode == "t":
@@ -108,8 +111,6 @@ if mode == "t":
 
 
     print("------------------------------")
-    print("Błąd obliczony w ostatniej epoce:", vec_delta[-1])
+    print("Błąd obliczony:", vec_delta[-1])
     print("Wzorzec: ", vector_y)
     print("Wynik:   ", vec_outcome[0])
-
-

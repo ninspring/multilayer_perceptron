@@ -87,7 +87,7 @@ class NeuronOutput(Neuron):
     def __init__(self, n_inputs, if_bias, momentum_coef, learn_coef, mode, hidden_layer):
         Neuron.__init__(self, n_inputs, if_bias, momentum_coef, learn_coef, mode)
 
-        self.hidden_layer = hidden_layer  # number of hidden layers which is the number of inputs for the neuron in OL
+        self.hidden_layer = hidden_layer  # list containing hidden layers
 
     # function to calculate the sum in the Neuron
     def sumator(self, X):
@@ -96,7 +96,7 @@ class NeuronOutput(Neuron):
         if self.bias:
             suma += self.w[0]
         for i in range(len(self.hidden_layer)):
-            suma += self.w[i + 1] * self.hidden_layer[i].f(X)
+            suma += self.w[i + 1] * self.hidden_layer[i].f(X)   # multiply weights and hidden layer output
 
         return suma
 

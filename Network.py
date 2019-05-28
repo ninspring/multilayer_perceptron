@@ -33,18 +33,20 @@ class Network:
         j = n_hidden_layers
         for i in range(n_hidden_layers):
             hl_neuron = neu.NeuronHidden(n_inputs, if_bias, momentum_coef, learn_coef, mode, self.outputLayer, i + 1)
+
             if mode == "t":
                 hl_neuron.setW(vector_weights[j-i-1])
-                print(hl_neuron.w)
+
             self.hiddenLayer.append(hl_neuron)
 
         j = n_hidden_layers
         for i in range(n_outputs):
             ol_neuron = neu.NeuronOutput(n_hidden_layers, if_bias, momentum_coef, learn_coef, mode, self.hiddenLayer)
+
             if mode == "t":
                 ol_neuron.setW(vector_weights[j])
-                print(ol_neuron.w)
                 j+=1
+
             self.outputLayer.append(ol_neuron)
 
     # Function to keep the output of every output layer
@@ -62,11 +64,11 @@ class Network:
         f_out = open('output_weights.out', 'w')
         f_out.truncate(0)
 
-        # calculate errors for every output layer
+        # calculate errors for every neuron in output layer
         for i in range(len(self.outputLayer)):
             self.outputLayer[i].sigma(x, y[i])
 
-        # calculate errors for every hidden layer
+        # calculate errors for every neuron in hidden layer
         for obj in self.hiddenLayer:
             obj.sigma(x)
 
@@ -115,11 +117,13 @@ def deltaNet(x, y, network):
 def outcome(x, network):
     return [network.f(x[i]) for i in range(len(x))]
 
+
 ## Changes for testing mode:
 def outcome2(x, network):
     o = [network.f(x[i]) for i in range(len(x))]
     o.reverse()
     return o
+
 
 def deltaY2(y, wyliczone):
     for i in range(len(wyliczone)):
@@ -136,6 +140,3 @@ def deltaY2(y, wyliczone):
 
 def deltaNet2(x, y, network):
     return deltaY2(y, [network.f(x[i]) for i in range(len(x))])
-
-def standardDev(deltaNet, N):
-    return math.sqrt((deltaNet * 2 * N) / (N - 1))
