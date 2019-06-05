@@ -1,8 +1,5 @@
 import Neuron as neu
-import math
 import Parser as files
-import numpy as np
-import random
 
 
 class Network:
@@ -21,9 +18,9 @@ class Network:
         self.hiddenLayer = []
         self.outputLayer = []
 
-        neu.NeuronHidden.f = neu.sigmoid
+        neu.NeuronHidden.sigmoid_f = neu.sigmoid
         neu.NeuronHidden.dF = neu.sigmoid_derivative
-        neu.NeuronOutput.f = neu.sigmoid
+        neu.NeuronOutput.sigmoid_f = neu.sigmoid
         neu.NeuronOutput.dF = neu.sigmoid_derivative
 
         vector_weights = files.file_parser2('output_weights.out')
@@ -54,8 +51,14 @@ class Network:
         out = []
 
         for i in range(len(self.outputLayer)):
-            out.append(round(self.outputLayer[i].f(x), 2))
+            out.append(round(self.outputLayer[i].sigmoid_f(x), 2))
+        return out
 
+    def f_test(self, x):
+        out = []
+
+        for i in range(len(self.outputLayer)):
+            out.append(round(self.outputLayer[i].sigmoid_f(x), 2))
         return out
 
 
@@ -95,12 +98,40 @@ class Network:
         for obj in self.hiddenLayer:
             obj.sigma(x)
 
+    def validate(self, x, y, x_test, y_test):
+
+        f_out = open('output_weights.out', 'w')
+        f_out.truncate(0)
+
+        # calculate errors for every neuron in output layer
+        for i in range(len(self.outputLayer)):
+            self.outputLayer[i].sigma(x, y[i])
+            self.outputLayer[i].sigma_test(x_test, y_test[i])
+
+        # calculate errors for every neuron in hidden layer
+        for obj in self.hiddenLayer:
+            obj.sigma(x)
+            obj.sigma_test(x_test)
+
+        # correct the weights
+        for obj in self.outputLayer:
+            ol_out = obj.correct(x)
+            f_out.write(str(ol_out))
+
+        for obj in self.hiddenLayer:
+            hl_out = obj.correct(x)
+            f_out.write(str(hl_out))
+
     def test_epoch(self, x, y):
         for i in range(len(x)):
             self.test(x[i], y[i])
 
+    def validate_epoch(self, x, y, x_test, y_test):
+        for i in range(len(x)):
+            self.validate(x[i], y[i], x_test[i], y_test[i])
 
-def deltaY(y, wyliczone):
+
+def delta_Y(y, wyliczone):
     suma = 0
 
     for i in range(len(y)):
@@ -110,15 +141,26 @@ def deltaY(y, wyliczone):
     return suma / (2 * len(y))
 
 
-def deltaNet(x, y, network):
-    return deltaY(y, [network.f(x[i]) for i in range(len(x))])
+def delta_net(x, y, network):
+    return delta_Y(y, [network.f(x[i]) for i in range(len(x))])
 
 
 def outcome(x, network):
     return [network.f(x[i]) for i in range(len(x))]
 
+# Changes for validation mode
 
-## Changes for testing mode:
+def delta_net_test(x, y, network, x_test, y_test):
+    result1 =  delta_Y(y, [network.f(x[i]) for i in range(len(x))])
+    result2 = delta_Y(y_test, [network.f_test(x_test[i]) for i in range(len(x_test))])
+    return result1, result2
+
+def outcome_test(x, network, x_test):
+    result1 = [network.f(x[i]) for i in range(len(x))]
+    result2 = [network.f_test(x_test[i]) for i in range(len(x_test))]
+    return result1, result2
+
+# Changes for testing mode:
 def outcome2(x, network):
     o = [network.f(x[i]) for i in range(len(x))]
     o.reverse()
@@ -128,7 +170,6 @@ def outcome2(x, network):
 def deltaY2(y, wyliczone):
     for i in range(len(wyliczone)):
         wyliczone[i].reverse()
-
     suma = 0
 
     for i in range(len(y)):

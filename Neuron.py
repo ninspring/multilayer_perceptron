@@ -1,4 +1,3 @@
-import Parser as files
 import numpy as np
 import random
 
@@ -12,7 +11,7 @@ class Neuron:
         self.learn_coef = learn_coef        # eta
 
         # w - weights matrix
-        if mode == "l":
+        if mode == "l" or "v":
             self.w = [random.uniform(-1, 1) for x in range(n_inputs + 1)]
 
             with open('input_weights.out', 'a') as f_handle:
@@ -22,6 +21,9 @@ class Neuron:
         # sigma - error, predefined with 0
         self.current_sigma = 0
         self.last_sigma = [0 for x in range(n_inputs+1)]
+        # error for testing data, predefined with 0
+        self.current_sigma_test = 0
+        self.last_sigma_test = [0 for x in range(n_inputs+1)]
 
     # take calculated sigma (already multiplied by sigmoid derivative and eta) and multiply by momentum coef
     def correct(self, x):
@@ -76,6 +78,18 @@ class NeuronHidden(Neuron):
             # derivative and by eta (learn coef). Essential for weights modification
         self.current_sigma = (self.current_sigma * dF * self.learn_coef)
 
+    def sigma_test(self, x):
+        dF = self.dF(x)
+        self.current_sigma_test = 0
+
+        # for every Output Layer, take it's calculated sigma error and multiply it by the weight of the input
+        for i in range(len(self.output_layer)):
+            self.current_sigma_test += self.output_layer[i].current_sigma_test * self.output_layer[i].w[self.index]
+
+        # we take the calculated sigma for the current Neuron we're in and multiply it by the activation function
+            # derivative and by eta (learn coef). Essential for weights modification
+        self.current_sigma_test = (self.current_sigma_test * dF * self.learn_coef)
+
     def correct_coef(self, x, i):
         return x[i]
 
@@ -96,19 +110,26 @@ class NeuronOutput(Neuron):
         if self.bias:
             suma += self.w[0]
         for i in range(len(self.hidden_layer)):
-            suma += self.w[i + 1] * self.hidden_layer[i].f(X)   # multiply weights and hidden layer output
+            suma += self.w[i + 1] * self.hidden_layer[i].sigmoid_f(X)   # multiply weights and hidden layer output
 
         return suma
 
     # function to calculate sigma error in the output layer by comparing it to the desired output y
     def sigma(self, x, y):
-        f = self.f(x)
+        f = self.sigmoid_f(x)
         dF = self.dF(x)
 
         self.current_sigma = ((f - y) * dF) * self.learn_coef
 
+    def sigma_test(self, x, y):
+        f = self.sigmoid_f(x)
+        dF = self.dF(x)
+
+        self.current_sigma_test = ((f - y) * dF) * self.learn_coef
+
     def correct_coef(self, x, i):
-        return self.hidden_layer[i].f(x)
+        return self.hidden_layer[i].sigmoid_f(x)
+
 
 # END OF NEURON CLASSES
 
@@ -119,9 +140,5 @@ def sigmoid(self, x):
 
 
 def sigmoid_derivative(self, x):
-    y = self.f(x)
+    y = self.sigmoid_f(x)
     return y * (1 - y)
-
-
-
-

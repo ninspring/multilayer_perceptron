@@ -41,16 +41,16 @@ def file_parser2(filename):
     return vector_X
 
 def whitch_columns(original_array, indexes):
-    if indexes[3] == 0:
+    if indexes[3] == "0":
         for row in original_array:
             del row[3]
-    if indexes[2] == 0:
+    if indexes[2] == "0":
         for row in original_array:
             del row[2]
-    if indexes[1] == 0:
+    if indexes[1] == "0":
         for row in original_array:
             del row[1]
-    if indexes[0] == 0:
+    if indexes[0] == "0":
         for row in original_array:
             del row[0]
     return original_array
@@ -86,7 +86,7 @@ def take_user_input():
     #define number of neurons in input layer
     input_layer_neurons = 0
     for i in which_columns:
-        if i != 0:
+        if i != "0":
             input_layer_neurons += 1
 
     # define number of neurons in hidden layer
