@@ -38,7 +38,7 @@ f_in.truncate(0)
 f_in.close()
 
 
-iterations = 10
+iterations = 200
 precision = 0.001
 
 # Define network
