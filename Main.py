@@ -50,11 +50,10 @@ vec_delta = []
 vec_outcome = []
 
 print("------------------------------")
-print("Error in every 200-th epoch:")
-print("------------------------------")
+print("Please wait...")
 Graphical_Interface.window.Refresh()
 
-epoka = -1
+epoka = 0
 error = 100
 for i in range(iterations):
     if error > precision:
@@ -62,25 +61,19 @@ for i in range(iterations):
         vec_delta.append(error)
         vec_outcome.append(net.outcome(vector_x, network))
         network.learn_epoch(vector_x, vector_y)
-        if i % 200 == 0:
-            print("Error in epoch no. ", i, "equals: ", round(error, 4))
-            epoka = i
-            Graphical_Interface.window.Refresh()
+        epoka = i
         i += 1
 
 
 
 print("------------------------------")
-print("Error in last epoch equals:", vec_delta[-1])
-print("Number of iterations:", epoka)
+print("Error in last epoch equals:", round(vec_delta[-1],4))
+print("Number of iterations:", epoka+1)
+print("------------------------------")
 Graphical_Interface.window.Refresh()
 
 target = Classification.name_species(vector_y, vec_delta[-1])
 predicted = Classification.name_species(vec_outcome[-1], vec_delta[-1])
-print("------------------------------")
-print("Confusion matrix: ")
-print(Classification.skliearnmatrix(target, predicted))
-Graphical_Interface.window.Refresh()
 
 plt.figure(0)
 line1, = plt.plot(vec_delta, 'r', label='learning set')
