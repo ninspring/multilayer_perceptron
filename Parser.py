@@ -1,7 +1,8 @@
 import re
+import Graphical_Interface as gui
 
 
-def file_parser1(filename):
+def file_parser(filename):
     vector_X = []
 
     with open(filename) as plik:
@@ -19,28 +20,7 @@ def file_parser1(filename):
     return vector_X
 
 
-def file_parser2(filename):
-
-    vector_X = []
-
-    with open(filename) as plik:
-        tab = plik.read()
-        tab = tab.replace("]", "")
-
-    tab = re.split('\[', tab)
-
-    while '' in tab:
-        tab.remove('')
-
-    for line in tab:
-        rowTxt = re.split(',', line)
-        row = [float(x) for x in rowTxt]
-
-        vector_X.append(row)
-
-    return vector_X
-
-def whitch_columns(original_array, indexes):
+def which_columns(original_array, indexes):
     if indexes[3] == "0":
         for row in original_array:
             del row[3]
@@ -59,26 +39,22 @@ def whitch_columns(original_array, indexes):
 def take_user_input():
     # Take user input
     which_columns = []
-    sepal_length = input("Consider sepal length? y/n: ")
-    if sepal_length == "y":
+    if gui.values['_sep_len_'] == True:
         which_columns.append("1")
     else:
         which_columns.append("0")
 
-    sepal_width = input("Consider sepal width? y/n: ")
-    if sepal_width == "y":
+    if gui.values['_sep_wid_'] == True:
         which_columns.append("1")
     else:
         which_columns.append("0")
 
-    petal_length = input("Consider petal length? y/n: ")
-    if petal_length == "y":
+    if gui.values['_pet_len_'] == True:
         which_columns.append("1")
     else:
         which_columns.append("0")
 
-    petal_width = input("Consider petal_width? y/n: ")
-    if petal_width == "y":
+    if gui.values['_pet_wid_'] == True:
         which_columns.append("1")
     else:
         which_columns.append("0")
@@ -90,17 +66,16 @@ def take_user_input():
             input_layer_neurons += 1
 
     # define number of neurons in hidden layer
-    hidden_layer_neurons = int(input("Number of neurons in hidden layer: "))
+    hidden_layer_neurons = int(gui.values['_hidden_'])
     output_layer_neurons = 3
     # define if bias
-    if_bias = input("Consider bias? y/n: ")
-    if if_bias == "y":
+    if gui.values['_bias_'] == True:
         bias = 1
     else:
         bias = 0
 
     # lern coefficient
-    eta = float(input("Learn coefficient value: "))
-    momentum = float(input("Momentum coefficient value: "))
+    eta = float(gui.values['_eta_'])
+    momentum = float(gui.values['_alfa_'])
 
     return which_columns, input_layer_neurons, hidden_layer_neurons, output_layer_neurons, bias, eta, momentum

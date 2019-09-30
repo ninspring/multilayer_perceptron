@@ -4,7 +4,6 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
-
 def name_species(predict, error):
     class_result = []
     if error < 0.1:

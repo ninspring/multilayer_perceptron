@@ -4,19 +4,18 @@ import random
 
 class Neuron:
 
-    def __init__(self, n_inputs, if_bias, momentum_coef, learn_coef, mode):
+    def __init__(self, n_inputs, if_bias, momentum_coef, learn_coef):
         self.n_inputs = n_inputs            # number of inputs in a neuron
         self.bias = if_bias
         self.momentum_coef = momentum_coef  # alfa
         self.learn_coef = learn_coef        # eta
 
         # w - weights matrix
-        if mode == "l" or "v":
-            self.w = [random.uniform(-1, 1) for x in range(n_inputs + 1)]
+        self.w = [random.uniform(-1, 1) for x in range(n_inputs + 1)]
 
-            with open('input_weights.out', 'a') as f_handle:
-                f_handle.write(str(self.w))
-                f_handle.close()
+        with open('input_weights.out', 'a') as f_handle:
+            f_handle.write(str(self.w))
+            f_handle.close()
 
         # sigma - error, predefined with 0
         self.current_sigma = 0
@@ -47,8 +46,8 @@ class Neuron:
 # Class Neuron from the Hidden Layer, inherits from class Neuron
 class NeuronHidden(Neuron):
 
-    def __init__(self, n_inputs, if_bias, momentum_coef, learn_coef, mode, output_layer, index):
-        Neuron.__init__(self, n_inputs, if_bias, momentum_coef, learn_coef, mode)
+    def __init__(self, n_inputs, if_bias, momentum_coef, learn_coef, output_layer, index):
+        Neuron.__init__(self, n_inputs, if_bias, momentum_coef, learn_coef)
 
         self.output_layer = output_layer    # number of output layers = the number of inputs for the neuron in HL in BP
         self.index = index
@@ -95,11 +94,10 @@ class NeuronHidden(Neuron):
 
 
 # Class Neuron from the Output Layer, inherits from class Neuron
-
 class NeuronOutput(Neuron):
 
-    def __init__(self, n_inputs, if_bias, momentum_coef, learn_coef, mode, hidden_layer):
-        Neuron.__init__(self, n_inputs, if_bias, momentum_coef, learn_coef, mode)
+    def __init__(self, n_inputs, if_bias, momentum_coef, learn_coef, hidden_layer):
+        Neuron.__init__(self, n_inputs, if_bias, momentum_coef, learn_coef)
 
         self.hidden_layer = hidden_layer  # list containing hidden layers
 
