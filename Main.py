@@ -55,7 +55,10 @@ Graphical_Interface.window.Refresh()
 
 epoka = 0
 error = 100
+progress = iterations
+
 for i in range(iterations):
+    Graphical_Interface.progress_bar.UpdateBar(epoka, iterations)
     if error > precision:
         error = net.delta_net(vector_x, vector_y, network)
         vec_delta.append(error)
@@ -65,11 +68,11 @@ for i in range(iterations):
         i += 1
 
 
-
 print("------------------------------")
 print("Error in last epoch equals:", round(vec_delta[-1],4))
 print("Number of iterations:", epoka+1)
 print("------------------------------")
+Graphical_Interface.progress_bar.UpdateBar(iterations, iterations)
 Graphical_Interface.window.Refresh()
 
 target = Classification.name_species(vector_y, vec_delta[-1])

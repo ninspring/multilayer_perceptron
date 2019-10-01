@@ -13,8 +13,10 @@ layout = [[sg.Text('Multi Layer Perceptron', size=(30, 1), font=("Helvetica", 25
     [sg.Output (size=(50, 10),
                 key='_output_',
                 visible=True)],
-    [sg.Submit(), sg.Cancel()]]
+    [sg.Submit(), sg.Cancel()],
+    [sg.ProgressBar(10000, orientation='h', size=(20, 20), key='progressbar')]]
 
 window = sg.Window('MLP application').Layout(layout).Finalize()
+progress_bar = window.FindElement('progressbar')
 
 event, values = window.Read()
